@@ -17,7 +17,7 @@ using namespace std;
 using namespace ariel;
 
 int main() {
-  // Create two players with their names 
+    // Create two players with their names
    Player p1("Alice");
    Player p2("Bob");
 
