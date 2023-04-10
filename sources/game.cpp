@@ -133,9 +133,24 @@ void Game::playAll(){
     }
     game_started = true;
     int counter = 0;
-    while((p1.stacksize() != 0 || p2.stacksize() != 0) && counter <= 26){
+    while(p1.stacksize() != 0 && p2.stacksize() != 0 && counter <= 26){
         playTurn();
         counter++;
+    }
+    if(p1.stacksize() != 0 || p2.stacksize() != 0){
+        queue<Card> tmp;
+        while(p1.stacksize() != 0){
+            tmp.push(p1.drawCard());
+        }
+        while(p2.stacksize() != 0){
+            tmp.push(p2.drawCard());
+        }
+        while(!tmp.empty() && (tmp.size() % 2 == 0)){
+            p1.addCard(tmp.front());
+            tmp.pop();
+            p2.addCard(tmp.front());
+            tmp.pop();
+        }
     }
     p2.update_games_count();
     p1.update_games_count();
