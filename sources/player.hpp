@@ -10,9 +10,21 @@
 #include <queue>
 #include "card.hpp"
 
+constexpr float cards_per_player = 26;
+
 using namespace std;
 namespace ariel{
-    typedef struct playerStats{
+    class Player{
+    private:
+        string name;
+        bool currently_playing = false;
+        int cards_taken = 0;
+        Card last_card_drawn = Card();
+        queue<Card> stack;
+
+        //////////////////////////////////////////////////////////
+        //player stats:
+        //////////////////////////////////////////////////////////
         float win_rate = 0;
         int cards_won = 0;
         float draw_rate = 0;
@@ -21,63 +33,37 @@ namespace ariel{
         int games_count = 0;
         int winning_count = 0;
         int tie_count = 0;
-    }PlayerStats;
-
-    class Player{
+        /////////////////////////////////////////////////////////
     public:
-        string name;
-        bool currently_playing = false;
-        queue<Card> stack;
-        int cards_taken = 0;
-        Card last_card_drawn;
-        PlayerStats playerStats;
 
-        Player(const string& name){
-            if(name.empty()){
-                cout << "name can't be empty!\n";
-                throw std::exception();
-            }
-            this->name = name;
-            cards_taken = 0;
-            last_card_drawn = Card();
-        }
+        Player(const string& name);
+        Player() = default;
 
-        Player()= default;
+        //player initializers:
+        const string& get_name() const{return name;}
+        void set_name(const string& name){this->name = name;}
+        const bool& get_currently_playing() const{return currently_playing;}
+        void set_currently_playing(bool choice){currently_playing = choice;}
 
-        int stacksize() const{
-            return int(stack.size());
-        }
-        int cardesTaken() const{
-            return cards_taken;
-        }
+        //stats updaters:
+        void update_rates();
+        void update_games_count();
+        void update_winning_count();
+        void update_tie_count();
+        void update_cards_won();
+        void update_draw_amount();
 
-        queue<Card> get_stack() const{
-            return stack;
-        }
+        //stats setters and getters:
+        int stacksize() const{return int(stack.size());}
+        int cardesTaken() const{return cards_taken;}
+        const Card& drawCard();
+        void addCard(const Card& card){stack.push(card);}
+        void print_stats();
 
-        Card get_last_card_drawn() const{
-            return last_card_drawn;
-        }
+        void set_cards_taken(int amount){cards_taken = amount;}
+        const Card& get_last_card_drawn() const{return last_card_drawn;}
+        void set_last_card_drawn(const Card& card){last_card_drawn = card;}
 
-        void set_last_card_drawn(Card& card){
-            last_card_drawn = card;
-        }
-
-        PlayerStats get_player_stats() const{
-            return playerStats;
-        }
-
-        string get_name() const{
-            return name;
-        }
-
-        bool get_currently_playing() const{
-            return currently_playing;
-        }
-
-        void set_currently_playing(bool choice){
-            currently_playing = choice;
-        }
     };
 }
 

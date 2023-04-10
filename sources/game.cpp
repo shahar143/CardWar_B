@@ -18,8 +18,8 @@ using namespace std;
 
 Game::Game(Player& player1, Player& player2): p1(player1), p2(player2){
     table_card_count = 0;
-    p1.currently_playing = true;
-    p2.currently_playing = true;
+    p1.set_currently_playing(true);
+    p2.set_currently_playing(true);
     sort_cards();
 }
 
@@ -43,79 +43,69 @@ void Game::sort_cards(){
     shuffle(cards_arr.begin(), cards_arr.end(), default_random_engine(seed));
 
     for(size_t i = 0; i < 52; i++){
-        if(i % 2 == 0) p1.stack.push(cards_arr.at(i));
-        else p2.stack.push(cards_arr.at(i));
+        if(i % 2 == 0) p1.addCard(cards_arr.at(i));
+        else p2.addCard(cards_arr.at(i));
     }
 }
 
 void Game::playTurn(){
-    if(p1.name == p2.name){
-        std::cout << "both players cannot have the same name!\n";
-        throw std::exception();
-    }
-    /*if(p1.currently_playing == true || p2.currently_playing == true){
-        std::cout << "one player cannot play in 2 games simultaneously!\n";
-        throw std::exception();
-    }*/
-    if(game_started == false && ((p1.stacksize() != 26) || (p1.cards_taken != 0) ||
-                                 (p2.stacksize() != 26) || (p2.cards_taken != 0))){
-        std::cout << "game's stats wasn't defined currectly\n";
+    if(p1.get_name() == p2.get_name()){
+        cout << "both players cannot have the same name!\n";
         throw exception();
     }
-    if(game_finished == true){
-        std::cout << "you cannot play anymore, the game has finished\n";
+    if((!game_started) && ((p1.stacksize() != 26) || (p1.cardesTaken() != 0) ||
+                                 (p2.stacksize() != 26) || (p2.cardesTaken() != 0))){
+        cout << "game's stats wasn't defined currectly\n";
+        throw exception();
+    }
+    if(game_finished){
+        cout << "you cannot play anymore, the game has finished\n";
         throw exception();
     }
     game_started = true;
-    if(p1.stack.empty() || p2.stack.empty()){
+    if(p1.stacksize() == 0 || p2.stacksize() == 0){
         return;
     }
-    p1.last_card_drawn = p1.stack.front();
-    p1.stack.pop();
-    p2.last_card_drawn = p2.stack.front();
+    p1.set_last_card_drawn(p1.drawCard());
+    p2.set_last_card_drawn(p2.drawCard());
     table_card_count += 2;
-    p2.stack.pop();
     string log = "";
-    while(p1.last_card_drawn.compareTo(p2.last_card_drawn) == 0){
-        p1.playerStats.draw_amount ++;
-        p2.playerStats.draw_rate ++;
+    while(p1.get_last_card_drawn().compareTo(p2.get_last_card_drawn()) == 0){
+        p1.update_draw_amount();
+        p2.update_draw_amount();
         int counter = 0;
         while(counter < 2){
-            if(p1.stack.empty() || p2.stack.empty()){
+            if(p1.stacksize() == 0 || p2.stacksize() == 0){
                 return;
             }
-            p1.stack.pop();
-            p2.stack.pop();
+            p1.drawCard();
+            p2.drawCard();
             table_card_count+= 2;
             counter++;
         }
-        if(p1.stack.empty() || p2.stack.empty()){
+        if(p1.stacksize() == 0 || p2.stacksize() == 0){
             return;
         }
-        p1.last_card_drawn = p1.stack.front();
-        p1.stack.pop();
-        p2.last_card_drawn = p2.stack.front();
-        p2.stack.pop();
+        p1.set_last_card_drawn(p1.drawCard());
+        p2.set_last_card_drawn(p2.drawCard());
         table_card_count += 2;
-        if(p1.last_card_drawn.card_type == p2.last_card_drawn.card_type)
-            log += ("draw. " + p1.name + " played " + p1.last_card_drawn.card_name + ". " + p2.name + " played " +
-                        p2.last_card_drawn.card_name + ". ");
+        if(p1.get_last_card_drawn().getCardType() == p2.get_last_card_drawn().getCardType())
+            log += ("draw. " + p1.get_name() + " played " + p1.get_last_card_drawn().getCardName() + ". " + p2.get_name() + " played " +
+                        p2.get_last_card_drawn().getCardName() + ". ");
     }
-    if(p1.last_card_drawn.compareTo(p2.last_card_drawn) == 1){
+    if(p1.get_last_card_drawn().compareTo(p2.get_last_card_drawn()) == 1){
         current_turn_winner = p1;
-        p1.cards_taken += table_card_count;
+        p1.set_cards_taken(p1.cardesTaken() + table_card_count);
         table_card_count = 0;
-        log += ("draw. " + p1.name + " played " + p1.last_card_drawn.card_name + ". " + p2.name + " played " +
-                p2.last_card_drawn.card_name + ". " + current_turn_winner.name + " won.");
+        log += ("draw. " + p1.get_name() + " played " + p1.get_last_card_drawn().getCardName() + ". " + p2.get_name() + " played " +
+                p2.get_last_card_drawn().getCardName() + ". " + current_turn_winner.get_name() + " won.");
     }
-    else if(p1.last_card_drawn.compareTo(p2.last_card_drawn) == -1){
+    else if(p1.get_last_card_drawn().compareTo(p2.get_last_card_drawn()) == -1){
         current_turn_winner = p2;
-        p2.cards_taken += table_card_count;
-        cout << "p2 cards taken: " << p2.cardesTaken() << endl;
-        cout << "table card count: " << table_card_count << endl;
+        p2.set_cards_taken(p2.cardesTaken() + table_card_count);
         table_card_count = 0;
-        log += ("draw. " + p1.name + " played " + p1.last_card_drawn.card_name + ". " + p2.name + " played " +
-                p2.last_card_drawn.card_name + ". " + current_turn_winner.name + " won.");
+        log += ("draw. " + p1.get_name() + " played " + p1.get_last_card_drawn().getCardName() + ". " + p2.get_name() + " played " +
+                p2.get_last_card_drawn().getCardName() + ". " + current_turn_winner.get_name() + " won.");
     }
     logs_queue.push(log);
     if(p1.stacksize() == 0 || p2.stacksize() == 0){
@@ -123,24 +113,23 @@ void Game::playTurn(){
     }
 }
 
-
 void Game::printLastTurn(){
-    if(game_started == false){
-        std::cout << "you cannot print the last turn before the game has started\n";
-        throw std::exception();
+    if(!game_started){
+        cout << "you cannot print the last turn before the game has started\n";
+        throw exception();
     }
     cout << logs_queue.back() << endl;
 }
 
 void Game::playAll(){
-    if(game_started == false && ((p1.stacksize() != 26) || (p1.cards_taken != 0) ||
-                                 (p2.stacksize() != 26) || (p2.cards_taken != 0))){
-        std::cout << "game's stats wasn't defined currectly\n";
-        throw std::exception();
+    if((!game_started) && ((p1.stacksize() != 26) || (p1.cardesTaken() != 0) ||
+                                 (p2.stacksize() != 26) || (p2.cardesTaken() != 0))){
+        cout << "game's stats wasn't defined currectly\n";
+        throw exception();
     }
-    if(game_finished == true){
-        std::cout << "you cannot play anymore, the game has finished\n";
-        throw std::exception();
+    if(game_finished){
+        cout << "you cannot play anymore, the game has finished\n";
+        throw exception();
     }
     game_started = true;
     int counter = 0;
@@ -148,45 +137,39 @@ void Game::playAll(){
         playTurn();
         counter++;
     }
-    p2.playerStats.games_count++;
-    p1.playerStats.games_count++;
-    p1.playerStats.cards_won += p1.cardesTaken();
-    p2.playerStats.cards_won += p2.cardesTaken();
+    p2.update_games_count();
+    p1.update_games_count();
+    p1.update_cards_won();
+    p2.update_cards_won();
     if(p1.cardesTaken() > p2.cardesTaken()){
         game_winner = p1;
-        p1.playerStats.winning_count++;
+        p1.update_winning_count();
     }
     else if(p2.cardesTaken() > p1.cardesTaken()){
         game_winner = p2;
-        p2.playerStats.winning_count++;
+        p2.update_winning_count();
     }
     else{
         cout << "it's a tie\n";
-        p1.playerStats.tie_count++;
-        p2.playerStats.tie_count++;
+        p1.update_tie_count();
+        p2.update_tie_count();
     }
-    p1.playerStats.win_rate = (p1.playerStats.winning_count/p1.playerStats.games_count);
-    p1.playerStats.tie_rate = (p1.playerStats.tie_count/p1.playerStats.games_count);
-    p2.playerStats.win_rate = (p2.playerStats.winning_count/p2.playerStats.games_count);
-    p2.playerStats.tie_rate = (p2.playerStats.tie_count/p2.playerStats.games_count);
-    p1.playerStats.draw_rate = (p1.playerStats.draw_amount/26);
-    p2.playerStats.draw_rate = (p2.playerStats.draw_amount/26);
-    p1.currently_playing = false;
-    p2.currently_playing = false;
+    p1.set_currently_playing(false);
+    p2.set_currently_playing(false);
     game_finished = true;
 }
 
 void Game::printWiner(){
-    if(game_started == false){
-        std::cout << "you cannot print the winner before the game has started or ended\n";
-        throw std::exception();
+    if(!game_started){
+        cout << "you cannot print the winner before the game has started or ended\n";
+        throw exception();
     }
-    cout << "the winner is: " << game_winner.name << endl;
+    cout << "the winner is: " << game_winner.get_name() << endl;
 }
 void Game::printLog(){
-    if(game_started == false){
-        std::cout << "you cannot print the game logs before the game has started\n";
-        throw std::exception();
+    if(!game_started){
+        cout << "you cannot print the game logs before the game has started\n";
+        throw exception();
     }
     int counter = 0;
     while(counter < logs_queue.size()){
@@ -199,23 +182,8 @@ void Game::printLog(){
 }
 
 void Game::printStats(){
-    cout << "print stats for player: " << p1.name << endl;
-    cout << p1.name << " played " << p1.playerStats.games_count << " games\n";
-    cout << p1.name << " won " << p1.playerStats.winning_count << " of them\n";
-    cout << p1.name << " finished " << p1.playerStats.tie_count << " of them in tie\n";
-    cout << "winning rate: " << p1.playerStats.win_rate << endl;
-    cout << "tie rate: " << p1.playerStats.tie_rate << endl;
-    cout << "draw rate: " << p1.playerStats.draw_rate << endl;
-    cout << "won total of " << p1.playerStats.cards_won << " cards" << endl;
-
-    cout << "print stats for player: " << p2.name << endl;
-    cout << p2.name << " played " << p2.playerStats.games_count << " games\n";
-    cout << p2.name << " won " << p2.playerStats.winning_count << " of them\n";
-    cout << p2.name << " finished " << p2.playerStats.tie_count << " of them in tie\n";
-    cout << "winning rate: " << p2.playerStats.win_rate << endl;
-    cout << "tie rate: " << p2.playerStats.tie_rate << endl;
-    cout << "draw rate: " << p2.playerStats.draw_rate << endl;
-    cout << "won total of " << p2.playerStats.cards_won << " cards" << endl;
+    p1.print_stats();
+    p2.print_stats();
 }
 
 

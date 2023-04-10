@@ -12,7 +12,7 @@ Card::Card(std::string card_name, int card_number): card_type(){
     this->card_name = card_name;
 }
 
-int Card::compareTo(const Card& other){
+int Card::compareTo(const Card& other) const{
     if(this->card_type == 1){
         if(other.card_type != 2 && other.card_type != 1) return 1;
         else if(other.card_type == 2) return -1;

@@ -12,7 +12,7 @@ using namespace std;
 
 namespace ariel{
     class Game {
-    public:
+    private:
         Player& p1;
         Player& p2;
         bool game_started = false;
@@ -22,8 +22,13 @@ namespace ariel{
         int table_card_count;
         Player game_winner;
 
-        Game(Player& player1, Player& player2);
+        /*
+         * @brief: this function will sort the cards and divide them between 2 player's stacks
+         */
         void sort_cards();
+
+    public:
+        Game(Player& player1, Player& player2);
         void playTurn();
         void printLastTurn();
         void playAll();
