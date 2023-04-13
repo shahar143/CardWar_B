@@ -39,6 +39,7 @@ void Game::sort_cards(){
                         Card("King of Hearts", 13), Card("King of Diamonds", 13), Card("King of Clubs", 13), Card("King of Spades", 13)};
 
 
+    //I took this code from stackoverflow from this link: https://cplusplus.com/forum/beginner/251751/ (the next 2 lines)
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     shuffle(cards_arr.begin(), cards_arr.end(), default_random_engine(seed));
 

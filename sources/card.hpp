@@ -15,13 +15,18 @@ namespace ariel{
         string card_name;
 
     public:
+        /*
+         * @param card_name: the name of the card
+         * @param card_number: the number of the card
+         * implementation is not exposed to the user. only game can create cards and assign them to players.
+         */
         Card(string card_name, int card_number);
         Card() = default;
 
         /*
-         * @return 1 if this card is bigger than the other card
-         * @return -1 if this card is smaller than the other card
-         * @return 0 if this card is equal to the other card
+         * @return 1 if this card is bigger than other
+         * @return -1 if this card is smaller than
+         * @return 0 if this card is equal to other
          */
         int compareTo(const Card& other) const;
 

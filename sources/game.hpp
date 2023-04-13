@@ -29,11 +29,27 @@ namespace ariel{
 
     public:
         Game(Player& player1, Player& player2);
+
+        /*
+         * @brief: this function plays a single turn of the game
+         */
         void playTurn();
         void printLastTurn();
+
+        /*
+         * @brief: this function will play the game until one of the players has no cards left
+         */
         void playAll();
         void printWiner();
+
+        /*
+         * @brief: prints all the turns played one line per turn (same format as game.printLastTurn())
+         */
         void printLog();
+
+        /*
+         * @brief: prints the statistics of the game
+         */
         void printStats();
     };
 }

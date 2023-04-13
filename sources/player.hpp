@@ -58,8 +58,12 @@ namespace ariel{
         int cardesTaken() const{return cards_taken;}
         const Card& drawCard();
         void addCard(const Card& card){stack.push(card);}
-        void print_stats();
 
+        /*
+         * @brief: prints the player's stats-this is the player's version of the game's print_stats() function.
+         * it is build like this to save setters and getters for the game class.
+         */
+        void print_stats();
         void set_cards_taken(int amount){cards_taken = amount;}
         const Card& get_last_card_drawn() const{return last_card_drawn;}
         void set_last_card_drawn(const Card& card){last_card_drawn = card;}
